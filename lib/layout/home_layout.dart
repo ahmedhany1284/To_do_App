@@ -1,5 +1,6 @@
 
 
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
@@ -7,6 +8,7 @@ import 'package:to_do_list/modules/new_tasks/new_tasks_screen.dart';
 import 'package:to_do_list/modules/done_tasks/done_tasks_screen.dart';
 import 'package:to_do_list/modules/archived_tasks/archived_tasks_screen.dart';
 import 'package:to_do_list/shared/components/components.dart';
+import 'package:to_do_list/shared/components/constants.dart';
 
 class Homelayout extends StatefulWidget {
   const Homelayout({Key? key}) : super(key: key);
@@ -31,6 +33,8 @@ class _HomelayoutState extends State<Homelayout> {
   var timecontroller=TextEditingController();
   var datecontroller=TextEditingController();
 
+
+
   @override
   void initState() {
     super.initState();
@@ -43,7 +47,11 @@ class _HomelayoutState extends State<Homelayout> {
       appBar: AppBar(
         title: Text(titles[cur_var]),
       ),
-      body: screen[cur_var],
+      body: ConditionalBuilder(
+          condition:tasks.length>0 ,
+          builder: (context)=>screen[cur_var],
+          fallback: (context)=>Center(child: CircularProgressIndicator()),
+      ),
 
       floatingActionButton: FloatingActionButton(
         onPressed:(){
@@ -55,11 +63,18 @@ class _HomelayoutState extends State<Homelayout> {
                 time: timecontroller.text,
                 date: datecontroller.text,
               ).then((value){
-                Navigator.pop(context);
-                isBottomsheeetShown=false;
-                setState(() {
-                  fabicon=Icons.edit;
+                getDataFromDatabase(database).then((value) {
+                  Navigator.pop (context);
+                  setState(() {
+
+                    isBottomsheeetShown=false;
+                    fabicon=Icons.edit;
+                    setState(() {
+                      tasks=value;
+                    });
+                  });
                 });
+
               });
             }
           }
@@ -135,7 +150,12 @@ class _HomelayoutState extends State<Homelayout> {
                     ),
                   ),
               elevation: 20.0,
-            );
+            ).closed.then((value) {
+              isBottomsheeetShown=false;
+              setState(() {
+                fabicon=Icons.edit;
+              });
+            });
             isBottomsheeetShown=true;
             setState(() {
               fabicon=Icons.add;
@@ -181,9 +201,9 @@ class _HomelayoutState extends State<Homelayout> {
     );
   }
 
-  Future<String> getname() async {
-    return 'Ahmed Hany';
-  }
+  // Future<String> getname() async {
+  //   return 'Ahmed Hany';
+  // }
 // 1- create database
 // 2-create table
 // 3- open database
@@ -214,6 +234,11 @@ class _HomelayoutState extends State<Homelayout> {
         });
       },
       onOpen: (database){
+        getDataFromDatabase(database).then((value) {
+          setState(() {
+            tasks=value;
+          });
+        });
         print('database opened');
     },
     );
@@ -227,7 +252,7 @@ class _HomelayoutState extends State<Homelayout> {
     return await database.transaction((txn) async {
       try {
         await txn.rawInsert(
-            'INSERT INTO tasks(title,date,time,status) VALUES("${title}","${time}","${date}","New")').then((value){
+            'INSERT INTO tasks(title,date,time,status) VALUES("${title}","${date}","${time}","New")').then((value){
           print('${value}Inserted successfully');
 
         });
@@ -238,6 +263,10 @@ class _HomelayoutState extends State<Homelayout> {
   }
 
 
+
+  Future<List<Map>> getDataFromDatabase(database) async{
+    return await database.rawQuery('SELECT * FROM tasks');
+  }
 
 }
 
