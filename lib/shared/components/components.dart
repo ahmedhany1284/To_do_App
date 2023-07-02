@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_list/shared/cubit/cubit.dart';
 
 Widget defaultFormField({
   required TextEditingController controller,
@@ -27,7 +28,7 @@ Widget defaultFormField({
   );
 }
 
-Widget buildTaskItem(Map model)=> Padding(
+Widget buildTaskItem(Map model, context)=> Padding(
   padding: const EdgeInsets.all(20.0),
   child: Row(
     children:
@@ -39,25 +40,48 @@ Widget buildTaskItem(Map model)=> Padding(
         ),
       ),
       SizedBox(width: 20.0,),
-      Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children:
-        [
-          Text(
-            '${model['title']}',
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
+      Expanded(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children:
+          [
+            Text(
+              '${model['title']}',
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          Text(
-            '${model['date']}',
-            style: TextStyle(
-              color: Colors.grey,
+            Text(
+              '${model['date']}',
+              style: TextStyle(
+                color: Colors.grey,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+      SizedBox(width: 20.0,),
+      IconButton(
+          onPressed: (){
+            AppCubit.get(context).updatedata(
+                status: 'Done',
+                id: model['id'],
+            );
+          },
+          icon: Icon(Icons.check_box),
+        color:Colors.green ,
+      ),
+      IconButton(
+          onPressed: (){
+            AppCubit.get(context).updatedata(
+                status: 'Archive',
+                id: model['id'],
+            );
+          },
+          icon: Icon(Icons.archive),
+        color: Colors.black45,
       ),
     ],
   ),
