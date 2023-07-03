@@ -112,6 +112,19 @@ class AppCubit extends Cubit<AppStates>
 
 
 
+  void deletedata({
+    required int id,
+  }) async {
+    database.rawDelete('DELETE FROM tasks WHERE id = ?', [id])
+      .then((value) {
+        getDataFromDatabase(database);
+      emit(AppDeleteDataBaseState());
+    });
+
+  }
+
+
+
 
   void change_Index(int index) {
     cur_var = index;

@@ -32,6 +32,7 @@ class Homelayout extends StatelessWidget {
   var datecontroller=TextEditingController();
 
 
+
   @override
   Widget build(BuildContext context) {
     return  BlocProvider(
@@ -46,20 +47,45 @@ class Homelayout extends StatelessWidget {
         {
           AppCubit cubit=AppCubit.get(context);
 
-
-
           return Scaffold(
             key: scaffoldkey,
-            appBar: AppBar(
-              title: Text(cubit.titles[cubit.cur_var]),
+
+            appBar:AppBar(
+              backgroundColor: Color.fromARGB(255, 2, 0 ,83),
+              elevation: 1,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if(cubit.cur_var==0)Icon(Icons.add_task_sharp),
+                  if(cubit.cur_var==1)Icon(Icons.task_alt),
+                  if(cubit.cur_var==2)Icon(Icons.archive),
+                  // Add an icon
+                  SizedBox(width: 8), // Add spacing between the icon and text
+                  Text(
+                    cubit.titles[cubit.cur_var],
+                    style: TextStyle(
+
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              centerTitle: true, // Center the title within the AppBar
+
             ),
-            body: ConditionalBuilder(
-              condition:state is! AppGetDataBaseLoadingState,
-              builder: (context)=>cubit.screen[cubit.cur_var],
-              fallback: (context)=>Center(child: CircularProgressIndicator()),
+            body: Container(
+
+              color: Color.fromARGB(255, 2, 0 ,83),
+              child: ConditionalBuilder(
+                condition:state is! AppGetDataBaseLoadingState,
+                builder: (context)=>cubit.screen[cubit.cur_var],
+                fallback: (context)=>Center(child: CircularProgressIndicator()),
+              ),
             ),
 
             floatingActionButton: FloatingActionButton(
+              backgroundColor:  Color.fromARGB(255, 254, 151 ,91),
               onPressed:(){
                 if(cubit.isBottomsheeetShown){
 
@@ -83,6 +109,7 @@ class Homelayout extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             defaultFormField(
+                              readonly: false,
                               controller: titlecontroller,
                               type: TextInputType.text,
                               validate: (value){
@@ -96,6 +123,7 @@ class Homelayout extends StatelessWidget {
                             ),
                             SizedBox(height: 15.0),
                             defaultFormField(
+                              readonly: true,
                               controller: timecontroller,
                               type: TextInputType.datetime,
                               onTap: (){
@@ -118,6 +146,7 @@ class Homelayout extends StatelessWidget {
 
                             SizedBox(height: 15.0),
                             defaultFormField(
+                              readonly: true,
                               controller: datecontroller,
                               type: TextInputType.datetime,
                               onTap: (){
@@ -162,6 +191,9 @@ class Homelayout extends StatelessWidget {
               ),
             ),
             bottomNavigationBar: BottomNavigationBar(
+              showSelectedLabels: true,
+              showUnselectedLabels: false,
+              backgroundColor:  Color.fromARGB(255, 64, 68 ,204),
               type: BottomNavigationBarType.fixed,
               currentIndex: cubit.cur_var,
               onTap: (index)
@@ -171,20 +203,24 @@ class Homelayout extends StatelessWidget {
               items:
               [
                 BottomNavigationBarItem(
+
                   icon:Icon(
                     Icons.menu,
+                    color: Colors.white,
                   ),
                   label: 'Tasks',
                 ),
                 BottomNavigationBarItem(
                   icon:Icon(
                     Icons.check_circle_outline,
+                    color: Colors.white,
                   ),
                   label: 'Done',
                 ),
                 BottomNavigationBarItem(
                   icon:Icon(
                     Icons.archive_outlined,
+                    color: Colors.white,
                   ),
                   label: 'Archieved',
                 ),

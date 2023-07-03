@@ -1,3 +1,4 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:to_do_list/shared/components/components.dart';
@@ -16,14 +17,9 @@ class New_Task_Screen extends StatelessWidget
 
         var tasks=AppCubit.get(context).new_tasks;
 
-        return ListView.separated(
-          itemBuilder: (context,index)=>buildTaskItem(tasks[index],context),
-          separatorBuilder: (context,index)=>Container(
-            width: double.infinity,
-            height: 1.0,
-            color: Colors.grey[300],
-          ),
-          itemCount: tasks.length,
+        return  taskBuilder(
+          tasks: tasks,
+          text: 'No Tasks Yet, hit the pen icon to add Tasks',
         );
       },
     );
